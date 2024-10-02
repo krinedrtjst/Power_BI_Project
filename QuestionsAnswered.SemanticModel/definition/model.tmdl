@@ -1,0 +1,22 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBIDesktopVersion = 2.136.1202.0 (24.09)
+
+annotation PBI_QueryOrder = ["Online Retail"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'Online Retail'
+ref table DateTableTemplate_c2fe6fce-01c0-4f6a-b347-2528ae120b42
+ref table LocalDateTable_f9dd2ccc-db72-4135-be24-af1025c54a56
+
+ref cultureInfo en-US
+

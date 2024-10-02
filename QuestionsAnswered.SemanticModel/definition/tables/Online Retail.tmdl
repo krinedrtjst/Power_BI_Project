@@ -1,0 +1,116 @@
+table 'Online Retail'
+	lineageTag: 6384323e-6b6b-455b-968c-0bc5a5bd6ab6
+
+	column InvoiceNo
+		dataType: string
+		lineageTag: 6d2c84be-17e1-484d-8a13-4fe82c264016
+		summarizeBy: none
+		sourceColumn: InvoiceNo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isText":true}
+
+	column StockCode
+		dataType: string
+		lineageTag: f271729b-e77f-4aa6-a7e6-cb8a2b9f03f8
+		summarizeBy: none
+		sourceColumn: StockCode
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isText":true}
+
+	column Description
+		dataType: string
+		lineageTag: b3e84afc-0fb9-4de8-804e-f2e61843feef
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isText":true}
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 87fa00a1-af9f-45f0-b417-c6db0808ce46
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column InvoiceDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c0155544-552f-4160-bb3e-8a0ac4feff4a
+		summarizeBy: none
+		sourceColumn: InvoiceDate
+
+		variation Variation
+			isDefault
+			relationship: 4e64737f-7a90-496b-892a-6a35b54988a5
+			defaultHierarchy: LocalDateTable_f9dd2ccc-db72-4135-be24-af1025c54a56.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPrice
+		dataType: double
+		lineageTag: 6aa6370d-03c1-49e7-8462-53b541e081c3
+		summarizeBy: sum
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CustomerID
+		dataType: string
+		lineageTag: 986a7289-c925-4dcd-aa23-607c32506278
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isText":true}
+
+	column Country
+		dataType: string
+		lineageTag: 437117b6-f815-44bf-b347-34de16b2eec5
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isText":true}
+
+	column Revenue = 'Online Retail'[Quantity]*'Online Retail'[UnitPrice]
+		dataType: double
+		lineageTag: 50fe5284-5565-4c49-a311-b19917e7c001
+		summarizeBy: sum
+		isDataTypeInferred
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Online Retail-0c63b881-cde8-4989-8ee1-292b83c44ba1' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\saadvs\Downloads\Documents\Projects\Tata\Online Retail Data Set\Online Retail.xlsx"), null, true),
+				    #"Online Retail_Sheet" = Source{[Item="Online Retail",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Online Retail_Sheet", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"InvoiceNo", type any}, {"StockCode", type any}, {"Description", type text}, {"Quantity", Int64.Type}, {"InvoiceDate", type datetime}, {"UnitPrice", type number}, {"CustomerID", Int64.Type}, {"Country", type text}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each [Quantity] >= 1),
+				    #"Filtered Rows1" = Table.SelectRows(#"Filtered Rows", each [UnitPrice] > 0),
+				    #"Filtered Rows2" = Table.SelectRows(#"Filtered Rows1", each [InvoiceDate] > #datetime(2011, 1, 1, 0, 0, 0))
+				in
+				    #"Filtered Rows2"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
